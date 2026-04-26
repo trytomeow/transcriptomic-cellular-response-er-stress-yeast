@@ -1,4 +1,4 @@
-# ER Stress Transcriptomics Analysis Pipeline
+# Transcriptomic analysis of cellular response to ER stress in Saccharomyces cerevisiae
 
 ## Overview
 
@@ -278,6 +278,3 @@ install.packages(c(
 This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE) for details.
 
 ---
-
-**Author:** Thanatan W.
-**Date:** March 2026
