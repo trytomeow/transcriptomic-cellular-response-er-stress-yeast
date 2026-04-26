@@ -2,7 +2,11 @@
 
 ## Overview
 
-R pipeline for generating figures for transcriptomic analysis of ER stress response in *S. cerevisiae* (WT vs *hac1*Δ).
+R pipeline for generating figures for transcriptomic analysis of cellular response to ER stress in *S. cerevisiae*.
+For this study, the objectives are as follows:
+1.	To investigate the temporal dynamics of transcriptional adaptation in S. cerevisiae in response to ER stress.
+2.	To elucidate the distinct roles of UPR-dependent and UPR-independent pathways in the ER stress response.
+
 
 ---
 
