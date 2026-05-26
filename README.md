@@ -4,7 +4,7 @@
 
 Transcriptomic analysis pipeline for generating figures for senior project entilted: Transcriptomic Analysis of Cellular Response to ER Stress in _S. cerevisiae_.
 
-## Objective of this project
+## Objectives of this project
 1. To investigate the temporal dynamics of transcriptional adaptation in _S. cerevisiae_ in response to ER stress. 
 2. To elucidate the distinct roles of UPR-dependent and UPR-independent pathways in the ER stress response. 
 
