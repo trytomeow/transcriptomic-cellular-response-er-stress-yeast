@@ -18,15 +18,6 @@ Transcriptomic analysis pipeline for generating figures for senior project entil
 # 3. Run the complete pipeline
 ```
 
-> **Path auto-detection:** `00_config.R` automatically detects the project root from its
-> own file location. No manual path configuration is needed as long as you `source()` the
-> pipeline from within `02_downstream/`.
-> If auto-detection fails, open `fig0_config/00_config.R` and set `BASE_DIR` manually:
->
-> ```r
-> BASE_DIR <- "/path/to/repo"
-> ```
-
 ---
 
 ## Repository Structure
