@@ -2,7 +2,7 @@
 
 ## Overview
 
-Transcriptomic analysis pipeline for generating figures for senior project entilted: Transcriptomic Analysis of Cellular Response to ER Stress in _Saccharomyces cerevisiae_.
+Transcriptomic analysis pipeline for generating figures for senior project entilted: Transcriptomic Analysis of Cellular Response to ER Stress in _S. cerevisiae_.
 
 ## Objective of this project
 1. To investigate the temporal dynamics of transcriptional adaptation in _S. cerevisiae_ in response to ER stress. 
