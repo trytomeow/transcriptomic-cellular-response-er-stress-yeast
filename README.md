@@ -14,11 +14,8 @@ Transcriptomic analysis pipeline for generating figures for senior project entil
 
 ```r
 # 1. Clone or download this repository
-# 2. Set working directory to the downstream folder
-setwd("path/to/02_downstream")
-
-# 3. Run the complete downstream pipeline
-source("master_downstream.R")
+# 2. Set working directory to the upstream and downstream folder
+# 3. Run the complete pipeline
 ```
 
 > **Path auto-detection:** `00_config.R` automatically detects the project root from its
