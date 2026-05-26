@@ -99,10 +99,24 @@ if (nrow(combined_res) == 0) {
 }
 
 # --- STEP 5: Process Data for Plotting ---
+plot_size_label <- switch(GO_PLOT_X_AXIS,
+    "FoldEnrichment" = "Fold Enrichment",
+    "Count"          = "Gene Count",
+    "Gene Ratio"
+)
+
 combined_res <- combined_res %>%
     mutate(
-        ratio_parts  = strsplit(GeneRatio, "/"),
-        GeneRatioNum = sapply(ratio_parts, function(x) as.numeric(x[1]) / as.numeric(x[2])),
+        ratio_parts    = strsplit(GeneRatio, "/"),
+        GeneRatioNum   = sapply(ratio_parts, function(x) as.numeric(x[1]) / as.numeric(x[2])),
+        bg_parts       = strsplit(GeneRatio, "/"),
+        BgRatioNum     = sapply(bg_parts, function(x) as.numeric(x[1]) / as.numeric(x[2])),
+        FoldEnrichment = GeneRatioNum / BgRatioNum,
+        PlotSizeVar    = switch(GO_PLOT_X_AXIS,
+            "FoldEnrichment" = FoldEnrichment,
+            "Count"          = as.numeric(Count),
+            GeneRatioNum
+        ),
         Description  = str_wrap(Description, width = 40)
     )
 combined_res$Direction <- factor(combined_res$Direction, levels = c("All", "Upregulated", "Downregulated"))
@@ -114,7 +128,7 @@ create_dotplot <- function(data, title_suffix = "", filename, plot_height = 16) 
         x = Direction,
         y = reorder(Description, GeneRatioNum)
     )) +
-        geom_point(aes(size = GeneRatioNum, color = -log10(p.adjust)), alpha = 0.8) +
+        geom_point(aes(size = PlotSizeVar, color = -log10(p.adjust)), alpha = 0.8) +
         facet_wrap(~Group, scales = "free_y", ncol = 1, labeller = as_labeller(c(
             "UPR-Dependent" = "bold('UPR-Dependent')",
             "UPR-Independent" = "bold('UPR-Independent')",
@@ -125,7 +139,7 @@ create_dotplot <- function(data, title_suffix = "", filename, plot_height = 16) 
             name = "-log10(p.adjust)"
         ) +
         scale_x_discrete(expand = expansion(add = GO_PLOT$X_EXPAND)) +
-        scale_size_continuous(name = "Gene Ratio", range = GO_PLOT$DOT_SIZE_RANGE) +
+        scale_size_continuous(name = plot_size_label, range = GO_PLOT$DOT_SIZE_RANGE) +
         labs(
             title = if (is.character(title_suffix) && title_suffix == "") {
                 "GO BP"
@@ -173,7 +187,7 @@ ko_data <- combined_res %>% filter(Group == "KO-Specific")
 create_dotplot(ko_data, bquote(bolditalic("hac1")*bolditalic(Delta)*bold("-Specific")), "fig4e_go_direction_ko_specific", plot_height = 8)
 
 # --- STEP 8: Save Results ---
-export_df <- combined_res %>% dplyr::select(-ratio_parts)
+export_df <- combined_res %>% dplyr::select(-ratio_parts, -bg_parts)
 write.csv(export_df, file.path(FIG4_DIR, "fig4e_go_direction_combined.csv"), row.names = FALSE)
 
 message("Done: fig4e_go_direction")

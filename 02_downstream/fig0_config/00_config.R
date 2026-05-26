@@ -49,7 +49,7 @@ EXCLUDE_YPD_12H <- TRUE
 MFUZZ_MIN_MEMBERSHIP <- 0.7
 
 # --- GO Enrichment Plot Mode ---
-# Options: "GeneRatio" (Proportion of genes) or "Count" (Number of genes)
+# Options: "GeneRatio" (proportion), "FoldEnrichment" (observed/expected ratio), or "Count" (Number of genes)
 GO_PLOT_X_AXIS <- "GeneRatio"
 
 # --- GO Enrichment Cutoffs ---

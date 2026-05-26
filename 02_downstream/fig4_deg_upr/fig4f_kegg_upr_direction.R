@@ -76,9 +76,19 @@ run_kegg <- function(subset_info) {
                 mutate(
                     Group = subset_info$group,
                     Direction = subset_info$name,
-                    GeneRatioNum = sapply(
+                    GeneRatioNum = as.numeric(sapply(
                         strsplit(as.character(GeneRatio), "/"),
                         function(x) as.numeric(x[1]) / as.numeric(x[2])
+                    )),
+                    BgRatioNum = as.numeric(sapply(
+                        strsplit(as.character(BgRatio), "/"),
+                        function(x) as.numeric(x[1]) / as.numeric(x[2])
+                    )),
+                    FoldEnrichment = GeneRatioNum / BgRatioNum,
+                    PlotSizeVar = switch(GO_PLOT_X_AXIS,
+                        "FoldEnrichment" = FoldEnrichment,
+                        "Count"          = as.numeric(Count),
+                        GeneRatioNum
                     )
                 )
             df$GeneRatioNum <- as.numeric(df$GeneRatioNum)
@@ -108,6 +118,12 @@ write.csv(combined, file.path(FIG4_DIR, "fig4f_kegg_upr_results_combined.csv"), 
 message("Saved: fig4f_kegg_upr_results_combined.csv")
 
 # --- STEP 3: Generate Plots ---
+plot_size_label <- switch(GO_PLOT_X_AXIS,
+    "FoldEnrichment" = "Fold Enrichment",
+    "Count"          = "Gene Count",
+    "Gene Ratio"
+)
+
 create_dotplot <- function(data, title, filename, plot_height = 8) {
     if (is.null(data) || nrow(data) == 0) {
         message(paste("  No sig terms for", title, "- Skipping plot."))
@@ -115,7 +131,7 @@ create_dotplot <- function(data, title, filename, plot_height = 8) {
     }
 
     p <- ggplot(data, aes(x = Direction, y = reorder(Description, GeneRatioNum))) +
-        geom_point(aes(size = GeneRatioNum, color = -log10(p.adjust)), alpha = 0.8) +
+        geom_point(aes(size = PlotSizeVar, color = -log10(p.adjust)), alpha = 0.8) +
         facet_wrap(~Group, ncol = 1, scales = "free_y", labeller = as_labeller(c(
             "UPR-Dependent" = "bold('UPR-Dependent')",
             "UPR-Independent" = "bold('UPR-Independent')",
@@ -123,7 +139,7 @@ create_dotplot <- function(data, title, filename, plot_height = 8) {
         ), default = label_parsed)) +
         scale_color_gradient(low = "#3498db", high = "#e74c3c", name = "-log10(p.adjust)") +
         scale_x_discrete(expand = expansion(add = GO_PLOT$X_EXPAND)) +
-        scale_size_continuous(name = "Gene Ratio", range = GO_PLOT$DOT_SIZE_RANGE) +
+        scale_size_continuous(name = plot_size_label, range = GO_PLOT$DOT_SIZE_RANGE) +
         labs(
             title = if (is.character(title)) paste0("KEGG: ", title) else bquote(bold("KEGG:") ~ .(title)),
             x = NULL, y = NULL

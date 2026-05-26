@@ -1,12 +1,8 @@
-# Transcriptomic analysis of cellular response to ER stress in Saccharomyces cerevisiae
+# ER Stress Transcriptomics Analysis Pipeline
 
 ## Overview
 
-R pipeline for generating figures for transcriptomic analysis of cellular response to ER stress in *S. cerevisiae*.
-For this study, the objectives are as follows:
-1.	To investigate the temporal dynamics of transcriptional adaptation in S. cerevisiae in response to ER stress.
-2.	To elucidate the distinct roles of UPR-dependent and UPR-independent pathways in the ER stress response.
-
+R pipeline for generating figures for transcriptomic analysis of ER stress response in *S. cerevisiae* (WT vs *hac1*Δ).
 
 ---
 
@@ -266,13 +262,16 @@ install.packages(c(
 
 ## Excluded Samples
 
-| Sample          | Reason          |
-| --------------- | --------------- |
-| `1-WT-YPD-12` | Outlier         |
-| `2-WT-YPD-12` | Outlier         |
-| `3-WT-YPD-12` | Outlier         |
-| `1-WT-Tm-12`  | Technical issue |
-| `1-WT-Tm-6`   | Technical issue |
+| Sample           | Reason  |
+| ---------------- | ------- |
+| `1-WT-YPD-12`  | Outlier |
+| `2-WT-YPD-12`  | Outlier |
+| `3-WT-YPD-12`  | Outlier |
+| `1-WT-YPD-24`  | Outlier |
+| `1-hac1-YPD-6` | Outlier |
+| `3-WT-0`       | Outlier |
+| `1-WT-Tm-12`   | Outlier |
+| `1-WT-Tm-6`    | Outlier |
 
 
 ---
@@ -282,3 +281,6 @@ install.packages(c(
 This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE) for details.
 
 ---
+
+**Author:** Thanatan W.
+**Date:** May 2026

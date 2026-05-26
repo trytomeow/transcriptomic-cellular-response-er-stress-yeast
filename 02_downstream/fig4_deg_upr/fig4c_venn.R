@@ -69,9 +69,20 @@ message("  - WT DEGs (", VENN_MODE, "): ", length(wt_degs))
 message("  - KO DEGs (", VENN_MODE, "): ", length(ko_degs))
 
 # --- STEP 4: Calculate Overlaps ---
-upr_dependent <- setdiff(wt_degs, ko_degs)
-upr_independent <- intersect(wt_degs, ko_degs)
-ko_specific <- setdiff(ko_degs, wt_degs)
+if (tolower(VENN_MODE) == "all") {
+    wt_up   <- get_degs(wt_res_df, "up")
+    wt_down <- get_degs(wt_res_df, "down")
+    ko_up   <- get_degs(ko_res_df, "up")
+    ko_down <- get_degs(ko_res_df, "down")
+
+    upr_dependent   <- unique(c(setdiff(wt_up, ko_up), setdiff(wt_down, ko_down)))
+    upr_independent <- unique(c(intersect(wt_up, ko_up), intersect(wt_down, ko_down)))
+    ko_specific     <- unique(c(setdiff(ko_up, wt_up), setdiff(ko_down, wt_down)))
+} else {
+    upr_dependent   <- setdiff(wt_degs, ko_degs)
+    upr_independent <- intersect(wt_degs, ko_degs)
+    ko_specific     <- setdiff(ko_degs, wt_degs)
+}
 
 message("  - upr-dependent (WT only): ", length(upr_dependent))
 message("  - upr-independent (Both): ", length(upr_independent))

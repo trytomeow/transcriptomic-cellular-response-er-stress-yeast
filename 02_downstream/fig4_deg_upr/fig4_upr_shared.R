@@ -44,12 +44,18 @@ message("DEGs Identified (|LFC| > ", LFC_CUTOFF, "):")
 message("  - WT (6h): ", length(deg_wt))
 message("  - KO (6h): ", length(deg_ko))
 
-# --- STEP 4: Categorize Genes (UPR Dependency) ---
-upr_dependent  <- setdiff(deg_wt, deg_ko)
-upr_independent <- intersect(deg_wt, deg_ko)
-ko_specific    <- setdiff(deg_ko, deg_wt)
+# --- STEP 4: Categorize Genes (UPR Dependency - Direction Aware) ---
+wt_up   <- res_wt$gene[!is.na(res_wt$padj) & res_wt$padj < PADJ_CUTOFF & res_wt$log2FoldChange > LFC_CUTOFF]
+wt_down <- res_wt$gene[!is.na(res_wt$padj) & res_wt$padj < PADJ_CUTOFF & res_wt$log2FoldChange < -LFC_CUTOFF]
 
-message("Gene Categories:")
+ko_up   <- res_ko$gene[!is.na(res_ko$padj) & res_ko$padj < PADJ_CUTOFF & res_ko$log2FoldChange > LFC_CUTOFF]
+ko_down <- res_ko$gene[!is.na(res_ko$padj) & res_ko$padj < PADJ_CUTOFF & res_ko$log2FoldChange < -LFC_CUTOFF]
+
+upr_dependent   <- unique(c(setdiff(wt_up, ko_up), setdiff(wt_down, ko_down)))
+upr_independent <- unique(c(intersect(wt_up, ko_up), intersect(wt_down, ko_down)))
+ko_specific     <- unique(c(setdiff(ko_up, wt_up), setdiff(ko_down, wt_down)))
+
+message("Gene Categories (Direction-Aware):")
 message("  - UPR-dependent (WT only): ", length(upr_dependent))
 message("  - UPR-independent (Both): ", length(upr_independent))
 message("  - KO-specific (KO only): ", length(ko_specific))

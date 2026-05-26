@@ -130,10 +130,24 @@ if (nrow(combined_res) == 0) {
 }
 
 # --- STEP 6: Prepare for Plotting ---
+plot_size_label <- switch(GO_PLOT_X_AXIS,
+    "FoldEnrichment" = "Fold Enrichment",
+    "Count"          = "Gene Count",
+    "Gene Ratio"
+)
+
 combined_res <- combined_res %>%
     mutate(
-        ratio_parts = strsplit(GeneRatio, "/"),
+        ratio_parts  = strsplit(as.character(GeneRatio), "/"),
         GeneRatioNum = sapply(ratio_parts, function(x) as.numeric(x[1]) / as.numeric(x[2])),
+        bg_parts     = strsplit(as.character(BgRatio), "/"),
+        BgRatioNum   = sapply(bg_parts, function(x) as.numeric(x[1]) / as.numeric(x[2])),
+        FoldEnrichment = GeneRatioNum / BgRatioNum,
+        PlotSizeVar  = switch(GO_PLOT_X_AXIS,
+            "FoldEnrichment" = FoldEnrichment,
+            "Count"          = as.numeric(Count),
+            GeneRatioNum
+        ),
         Description = str_wrap(Description, width = 40),
         Direction = factor(Direction, levels = c("All", "Upregulated", "Downregulated"))
     )
@@ -142,11 +156,11 @@ combined_res <- combined_res %>%
 create_dotplot <- function(data, title, filename, plot_height = 8) {
 
     p <- ggplot(data, aes(x = Direction, y = reorder(Description, GeneRatioNum))) +
-        geom_point(aes(size = GeneRatioNum, color = -log10(p.adjust)), alpha = 0.8) +
+        geom_point(aes(size = PlotSizeVar, color = -log10(p.adjust)), alpha = 0.8) +
         facet_wrap(~Group, scales = "free_y", ncol = 1) +
         scale_x_discrete(expand = expansion(add = GO_PLOT$X_EXPAND)) +
         scale_color_gradient(low = "#3498db", high = "#e74c3c", name = "-log10(p.adjust)") +
-        scale_size_continuous(name = "Gene Ratio", range = GO_PLOT$DOT_SIZE_RANGE) +
+        scale_size_continuous(name = plot_size_label, range = GO_PLOT$DOT_SIZE_RANGE) +
         labs(
             title = paste0("KEGG: ", title),
             x = NULL, y = NULL
@@ -185,7 +199,7 @@ data_p3 <- combined_res %>% filter(Group == "24h vs 12h")
 if (nrow(data_p3) > 0) create_dotplot(data_p3, "WT Tm (24h) vs WT Tm (12h)", "fig3f_kegg_24h_vs_12h", plot_height = 8)
 
 # Save Summary CSV
-write.csv(combined_res %>% dplyr::select(-ratio_parts),
+write.csv(combined_res %>% dplyr::select(-ratio_parts, -bg_parts),
     file.path(FIG3_DIR, "fig3f_kegg_temporal_combined.csv"),
     row.names = FALSE
 )

@@ -98,9 +98,19 @@ run_go_cluster <- function(genes, cluster_id, universe) {
                     Cluster = paste0("Cluster ", cluster_id),
                     ClusterNum = cluster_id,
                     GeneRatioNum = as.numeric(sapply(
-                        strsplit(GeneRatio, "/"),
+                        strsplit(as.character(GeneRatio), "/"),
                         function(x) as.numeric(x[1]) / as.numeric(x[2])
-                    ))
+                    )),
+                    BgRatioNum = as.numeric(sapply(
+                        strsplit(as.character(BgRatio), "/"),
+                        function(x) as.numeric(x[1]) / as.numeric(x[2])
+                    )),
+                    FoldEnrichment = GeneRatioNum / BgRatioNum,
+                    PlotSizeVar = switch(GO_PLOT_X_AXIS,
+                        "FoldEnrichment" = FoldEnrichment,
+                        "Count"          = as.numeric(Count),
+                        GeneRatioNum
+                    )
                 )
             message("  Cluster ", cluster_id, ": ", nrow(res_df), " terms")
             return(res_df)
@@ -132,6 +142,12 @@ message("Saved: fig3i_mfuzz_go.csv")
 
 
 # --- STEP 5: Dot Plot ---
+plot_size_label <- switch(GO_PLOT_X_AXIS,
+    "FoldEnrichment" = "Fold Enrichment",
+    "Count"          = "Gene Count",
+    "Gene Ratio"
+)
+
 dot_data <- combined_res %>%
     mutate(Description = str_wrap(Description, width = 45)) %>%
     group_by(Cluster) %>%
@@ -143,7 +159,7 @@ p_dot <- ggplot(dot_data, aes(
     x    = reorder(Cluster, ClusterNum),
     y    = Description
 )) +
-    geom_point(aes(size = GeneRatioNum, color = -log10(p.adjust)), alpha = 0.85) +
+    geom_point(aes(size = PlotSizeVar, color = -log10(p.adjust)), alpha = 0.85) +
     scale_color_gradient2(
         low      = "#3498DB",
         mid      = "#F39C12",
@@ -151,7 +167,7 @@ p_dot <- ggplot(dot_data, aes(
         midpoint = 2,
         name     = "-log10(p.adj)"
     ) +
-    scale_size_continuous(name = "Gene Ratio", range = GO_PLOT$DOT_SIZE_RANGE) +
+    scale_size_continuous(name = plot_size_label, range = GO_PLOT$DOT_SIZE_RANGE) +
     scale_x_discrete(expand = expansion(add = GO_PLOT$X_EXPAND)) +
     labs(
         title = paste0("GO ", GO_ONTOLOGY, " Enrichment per Temporal Cluster"),
